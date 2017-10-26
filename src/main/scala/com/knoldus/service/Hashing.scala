@@ -1,5 +1,7 @@
 package com.knoldus.service
 
+import com.knoldus.model.{CassandraDatabase, DPH}
+
 class Hashing {
 
   def applyMod: (Int, Int) => Int = (base, value) => value % base + 1
@@ -12,4 +14,18 @@ class Hashing {
   def applyHashingTwo(predicate: String): Int =
     mod5(predicate.toUpperCase.toCharArray.sum.toInt)
 
+}
+
+object Hashing {
+  def main(args: Array[String]): Unit = {
+
+    val hashing = new Hashing
+    val dPH = DPH("Larry Page", 0, "CEO", "Google", "Owner", "Alphabet",
+      "Nationality", "Livepedlian", "Lives", "US", "wealth", "$200 Million")
+    CassandraDatabase.dph.createTable
+    CassandraDatabase.dph.saveToDPH(dPH)
+    Thread.sleep(10000L)
+    println("Hashing One " + hashing.applyHashingOne("CEO"))
+    println("Hashing Two " + hashing.applyHashingTwo("CEO"))
+  }
 }

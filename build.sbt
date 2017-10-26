@@ -8,7 +8,7 @@ organization := "com.knoldus"
 
 //Source
 
-val phantom = "com.outworkers" % "phantom-dsl_2.11" % "2.14.5"
+val phantom = "com.outworkers" %% "phantom-dsl" % "2.14.5"
 val kafkaClient = "org.apache.kafka" % "kafka-clients" % "0.11.0.1"
 
 //Test

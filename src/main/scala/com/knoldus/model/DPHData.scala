@@ -4,7 +4,7 @@ import com.outworkers.phantom.dsl._
 
 import scala.concurrent.Future
 
-abstract class DPHData extends Table[DPHData, DPH] with RootConnector{
+abstract class DPHData extends Table[DPHData, DPH] {
 
   object subject extends StringColumn with PartitionKey
 
@@ -30,9 +30,12 @@ abstract class DPHData extends Table[DPHData, DPH] with RootConnector{
 
   object val5 extends StringColumn
 
+  def createTable: Seq[ResultSet] = CassandraDatabase.create()
+
   def saveToDPH(dPH: DPH): Future[ResultSet] = {
-    store(dPH)
-      /*.value(_.subject, dPH.subject)
+
+    insert
+      .value(_.subject, dPH.subject)
       .value(_.spill, dPH.spill)
       .value(_.val1, dPH.val1)
       .value(_.pred1, dPH.pred1)
@@ -43,7 +46,7 @@ abstract class DPHData extends Table[DPHData, DPH] with RootConnector{
       .value(_.val4, dPH.val4)
       .value(_.pred4, dPH.pred4)
       .value(_.val5, dPH.val5)
-      .value(_.pred5, dPH.pred5)*/
+      .value(_.pred5, dPH.pred5)
       .future()
   }
 }
