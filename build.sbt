@@ -6,11 +6,14 @@ scalaVersion := "2.12.3"
 
 organization := "com.knoldus"
 
+//Source
 
-libraryDependencies ++= Seq(
-  "org.apache.cassandra" % "cassandra-all" % "3.11.1",
-  "com.datastax.cassandra" % "cassandra-driver-core" % "3.3.0",
-  "com.outworkers" % "phantom-dsl_2.11" % "2.14.5",
-  "org.apache.kafka" % "kafka-clients" % "0.11.0.1",
-  "org.scalatest" % "scalatest_2.12" % "3.2.0-SNAP9" % "test"
-)
+val phantom = "com.outworkers" % "phantom-dsl_2.11" % "2.14.5"
+val kafkaClient = "org.apache.kafka" % "kafka-clients" % "0.11.0.1"
+
+//Test
+
+val scalaTest = "org.scalatest" % "scalatest_2.12" % "3.2.0-SNAP9" % "test"
+
+libraryDependencies ++= Seq(phantom, kafkaClient)
+libraryDependencies ++= Seq(scalaTest)
