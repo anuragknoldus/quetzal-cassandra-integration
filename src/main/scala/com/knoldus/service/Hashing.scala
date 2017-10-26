@@ -1,6 +1,8 @@
 package com.knoldus.service
 
-import com.knoldus.model.{CassandraDatabase, DPH, PredicateStore}
+import com.knoldus.model.{CassandraDatabase, DPH, PredicateStore, SearchColumns}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class Hashing {
 
@@ -26,7 +28,11 @@ object Hashing {
     CassandraDatabase.dph.createTable
     CassandraDatabase.dph.saveToDPH(dPH)
     CassandraDatabase.predicate.saveToPredicateLookUp(predicateStore)
-    Thread.sleep(10000L)
+    Thread.sleep(500L)
+    CassandraDatabase.dph.searchByColumn(SearchColumns.PRED1, "CEO").foreach { tripleData =>
+      println(tripleData)
+    }
+    Thread.sleep(1000L)
     println("Hashing One " + hashing.applyHashingOne("CEO"))
     println("Hashing Two " + hashing.applyHashingTwo("CEO"))
   }
