@@ -2,6 +2,8 @@ package com.knoldus.model
 
 import com.outworkers.phantom.dsl._
 
+import scala.language.reflectiveCalls
+
 case class DPH(
                 subject: String,
                 spill: Int = 0,
@@ -18,7 +20,7 @@ case class DPH(
               )
 
 object Defaults {
-  val Connector = ContactPoint.local.keySpace(KeySpace("my_keyspace")
+  val Connector: CassandraConnection = ContactPoint.local.keySpace(KeySpace("quetzel")
     .ifNotExists().`with`(replication eqs SimpleStrategy.replication_factor(2)))
 }
 
@@ -28,3 +30,8 @@ class CassandraDatabase(override val connector: CassandraConnection) extends Dat
 
 }
 
+object CassandraDatabase extends CassandraDatabase(Defaults.Connector)
+
+trait DbProvider extends DatabaseProvider[CassandraDatabase] {
+  override val database: CassandraDatabase.type = CassandraDatabase
+}
