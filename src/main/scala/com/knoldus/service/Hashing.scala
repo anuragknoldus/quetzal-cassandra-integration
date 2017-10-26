@@ -1,6 +1,6 @@
 package com.knoldus.service
 
-import com.knoldus.model.{CassandraDatabase, DPH}
+import com.knoldus.model.{CassandraDatabase, DPH, PredicateStore}
 
 class Hashing {
 
@@ -22,8 +22,10 @@ object Hashing {
     val hashing = new Hashing
     val dPH = DPH("Larry Page", 0, "CEO", "Google", "Owner", "Alphabet",
       "Nationality", "Livepedlian", "Lives", "US", "wealth", "$200 Million")
+    val predicateStore = PredicateStore("CEO", "pred1")
     CassandraDatabase.dph.createTable
     CassandraDatabase.dph.saveToDPH(dPH)
+    CassandraDatabase.predicate.saveToPredicateLookUp(predicateStore)
     Thread.sleep(10000L)
     println("Hashing One " + hashing.applyHashingOne("CEO"))
     println("Hashing Two " + hashing.applyHashingTwo("CEO"))
