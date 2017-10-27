@@ -19,6 +19,7 @@ class Hashing {
 }
 
 object Hashing extends DbProvider {
+
   def main(args: Array[String]): Unit = {
 
     val hashing = new Hashing
