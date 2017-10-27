@@ -1,6 +1,6 @@
 package com.knoldus.service
 
-import com.knoldus.model.{CassandraDatabase, DPH, PredicateStore, SearchColumns}
+import com.knoldus.model._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,20 +18,17 @@ class Hashing {
 
 }
 
-object Hashing {
+object Hashing extends DbProvider {
   def main(args: Array[String]): Unit = {
 
     val hashing = new Hashing
-    val dPH = DPH("Larry Page", 0, "CEO", "Google", "Owner", "Alphabet",
-      "Nationality", "Livepedlian", "Lives", "US", "wealth", "$200 Million")
+    val dPH = DPH("Larry Page", 0, "CEO", "Google", "Owner", "Alphabet", "Nationality", "Livepedlian", "Lives", "US", "wealth", "$200 Million")
     val predicateStore = PredicateStore("CEO", "pred1")
-    CassandraDatabase.dph.createTable
-    CassandraDatabase.dph.saveToDPH(dPH)
-    CassandraDatabase.predicate.saveToPredicateLookUp(predicateStore)
+    database.dph.createTable
+    database.storeDPH(dPH)
+    database.storePredicate(predicateStore)
     Thread.sleep(500L)
-    CassandraDatabase.dph.searchByColumn(SearchColumns.PRED1, "CEO").foreach { tripleData =>
-      println(tripleData)
-    }
+    database.dph.searchByColumn(SearchColumns.PRED1, "CEO").foreach(tripleData => println(tripleData))
     Thread.sleep(1000L)
     println("Hashing One " + hashing.applyHashingOne("CEO"))
     println("Hashing Two " + hashing.applyHashingTwo("CEO"))

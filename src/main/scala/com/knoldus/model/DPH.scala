@@ -23,7 +23,7 @@ case class PredicateStore(
                            predicate: String,
                            location: String
                          )
-
+import scala.concurrent.{Future => ScalaFuture}
 object Defaults {
   val Connector: CassandraConnection = ContactPoint.local.keySpace(KeySpace("quetzal")
     .ifNotExists().`with`(replication eqs SimpleStrategy.replication_factor(2)))
@@ -35,6 +35,13 @@ class CassandraDatabase(override val connector: CassandraConnection) extends Dat
 
   object predicate extends PredicateLookUp with Connector
 
+  def storePredicate(predicateData: PredicateStore): ScalaFuture[ResultSet] = {
+    predicate.store(predicateData).future()
+  }
+
+  def storeDPH(dphData: DPH): ScalaFuture[ResultSet] = {
+    dph.store(dphData).future()
+  }
 }
 
 object CassandraDatabase extends CassandraDatabase(Defaults.Connector)
