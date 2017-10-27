@@ -7,17 +7,17 @@ import scala.language.reflectiveCalls
 case class DPH(
                 subject: String,
                 spill: Int = 0,
-                pred1: String = null,
-                val1: String = null,
-                pred2: String = null,
-                val2: String = null,
-                pred3: String = null,
-                val3: String = null,
-                pred4: String = null,
-                val4: String = null,
-                pred5: String = null,
-                val5: String = null,
-                domain: String = null
+                pred1: String = "",
+                val1: String = "",
+                pred2: String = "",
+                val2: String = "",
+                pred3: String = "",
+                val3: String = "",
+                pred4: String = "",
+                val4: String = "",
+                pred5: String = "",
+                val5: String = "",
+                domain: String
               )
 
 case class PredicateStore(
