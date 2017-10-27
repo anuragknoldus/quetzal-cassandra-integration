@@ -24,14 +24,12 @@ object Hashing extends DbProvider {
     val hashing = new Hashing
     val dPH = DPH("Larry Page", 0, "CEO", "Google", "Owner", "Alphabet", "Nationality", "Livepedlian", "Lives", "US", "wealth", "$200 Million")
     val predicateStore = PredicateStore("CEO", "pred1")
-
     database.dph.createTable
     database.dph.store(dPH)
     database.predicate.saveToPredicateLookUp(predicateStore)
     Thread.sleep(10000L)
-    CassandraDatabase.dph.searchByColumn(SearchColumns.PRED1, "CEO").foreach { tripleData =>
-      println(tripleData)
-    }
+    val dph = CassandraDatabase.dph.searchByColumn(List("pred4", "pred1"), List("Lives", "CEO"))
+    println(dph)
     Thread.sleep(1000L)
     println("Hashing One " + hashing.applyHashingOne("CEO"))
     println("Hashing Two " + hashing.applyHashingTwo("CEO"))

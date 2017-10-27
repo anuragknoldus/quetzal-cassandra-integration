@@ -1,7 +1,12 @@
 package com.knoldus.model
 
+import com.datastax.driver.core
 import com.outworkers.phantom.dsl._
-import com.knoldus.model.SearchColumns._
+import org.json4s.DefaultFormats
+import org.json4s.jackson.JsonMethods.parse
+
+import scala.collection.JavaConverters._
+import scala.concurrent.JavaConversions._
 import scala.concurrent.Future
 
 abstract class DPHData extends Table[DPHData, DPH] {
@@ -35,22 +40,34 @@ abstract class DPHData extends Table[DPHData, DPH] {
   def createTable: Seq[ResultSet] = CassandraDatabase.create()
 
 
-  def searchByColumn(columnName: SearchColumns.Value, value: String): Future[Option[DPH]] = {
+  def searchByColumn(columnName: List[String], values: List[String]): DPH = {
 
-    val partialQuery = select.allowFiltering
+    val columnNameWithValues = columnName.zip(values)
+    val partialWhereQuery = columnNameWithValues.map { case (columnsName, value) =>
+      s"""$columnsName = '$value'"""
+    }.mkString(" AND ")
 
-    columnName match {
-      case PRED1 => partialQuery.where(_.pred1.eqs(value)).one
-      case PRED2 => partialQuery.where(_.pred2.eqs(value)).one
-      case PRED3 => partialQuery.where(_.pred3.eqs(value)).one
-      case PRED4 => partialQuery.where(_.pred4.eqs(value)).one
-      case PRED5 => partialQuery.where(_.pred5.eqs(value)).one
-      case VAL1 => partialQuery.where(_.val1.eqs(value)).one
-      case VAL2 => partialQuery.where(_.val2.eqs(value)).one
-      case VAL3 => partialQuery.where(_.val3.eqs(value)).one
-      case VAL4 => partialQuery.where(_.val4.eqs(value)).one
-      case VAL5 => partialQuery.where(_.val5.eqs(value)).one
-      case _ => throw new Exception("Undefined Column Name")
+    val completeSQL = s"SELECT * FROM quetzal.dphdata WHERE $partialWhereQuery LIMIT 1 ALLOW FILTERING"
+    val dPHAsRow: core.Row = CassandraDatabase.session.execute(completeSQL).one()
+    if (Option(dPHAsRow).isDefined) {
+      convertRowToDPH(dPHAsRow)
     }
+    else {
+      throw new Exception("No Data Found")
+    }
+  }
+
+  private def convertRowToDPH(dPHAsRow: core.Row): DPH = {
+
+    val partialJson = dPHAsRow.getColumnDefinitions.asScala.map { columnDefinition =>
+      columnDefinition.getType.getName.toString match {
+
+        case "int" => s""""${columnDefinition.getName}":"${dPHAsRow.getInt(columnDefinition.getName)}""""
+        case "varchar" => s""""${columnDefinition.getName}":"${dPHAsRow.getString(columnDefinition.getName)}""""
+      }
+    }.mkString(",")
+    val completeJson = s"""{$partialJson}"""
+    implicit val formats: DefaultFormats.type = DefaultFormats
+    parse(completeJson).extract[DPH]
   }
 }
