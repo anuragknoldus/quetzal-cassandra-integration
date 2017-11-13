@@ -14,25 +14,15 @@ class Cluster {
     }
   }
 
-  def createPredicateSchema() = {
+  def createPredicateSchema(): Unit = {
     val session = createCluster().connect()
     val createDatabase =
       s"""CREATE KEYSPACE IF NOT EXISTS $databaseName WITH REPLICATION = { 'class' : 'SimpleStrategy'
          |, 'replication_factor' : 3 };""".stripMargin
     session.execute(createDatabase)
     val query = s"""CREATE TABLE IF NOT EXISTS $databaseName.$DirectPredicate($Predicate text PRIMARY KEY, $Location text)"""
-    val rs = session.execute(query)
-    rs.getExecutionInfo
+    session.execute(query)
     session.close()
-  }
-
-}
-
-
-object Clusters {
-  def main(args: Array[String]): Unit = {
-    val cluster = new Cluster
-    cluster.createPredicateSchema()
   }
 
 }
