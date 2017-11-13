@@ -18,7 +18,10 @@ package object knoldus {
   val Spill: String = "spill"
   val Prop: String = "prop"
   val Val: String = "val"
+  val Domain: String = "domain"
   val DPH: String = "dph"
+  val Predicate: String = "predicate"
+  val Location: String = "location"
   val DirectPredicate: String = "direct_predicate"
   val sparkConf: SparkConf = new SparkConf()
     .setAppName(sparkAppName)
