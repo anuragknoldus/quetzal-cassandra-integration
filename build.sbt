@@ -28,4 +28,4 @@ val netty = "io.netty" % "netty-all" % "4.0.44.Final"
 val overridesDependencies= Seq(netty, thrift, guava)
 
 libraryDependencies ++= (sourceDependencies ++ testDependencies)
-dependencyOverrides ++= (overridesDependencies)
+dependencyOverrides ++= overridesDependencies
