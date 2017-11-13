@@ -13,13 +13,3 @@ class Hashing {
     mod5(predicate.toUpperCase.toCharArray.sum.toInt)
 
 }
-
-object Hashing {
-
-  def main(args: Array[String]): Unit = {
-
-    val hashing = new Hashing
-    println("Hashing One " + hashing.applyHashingOne("CEO"))
-    println("Hashing Two " + hashing.applyHashingTwo("CEO"))
-  }
-}
