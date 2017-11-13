@@ -12,8 +12,10 @@ package object knoldus {
   val password: String = config.getString("database.password")
   val databaseEndPoint: String = config.getString("database.endpoint")
   val databaseUrl: String = config.getString("database.url")
+  val dphTableSize: Int = config.getInt("database.size")
   val sparkMaster: String = config.getString("spark.master")
   val sparkAppName: String = config.getString("spark.appName")
+  val Id: String = "id"
   val Entity: String = "entity"
   val Spill: String = "spill"
   val Prop: String = "prop"
