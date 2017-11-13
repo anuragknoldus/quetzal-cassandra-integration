@@ -3,5 +3,5 @@ package model
 
 class Cluster {
 
-  
+
 }

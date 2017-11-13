@@ -1,6 +1,8 @@
 package com
 
 import com.typesafe.config.{Config, ConfigFactory}
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
 
 package object knoldus {
 
@@ -8,5 +10,18 @@ package object knoldus {
   val databaseName: String = config.getString("database.name")
   val userName: String = config.getString("database.username")
   val password: String = config.getString("database.password")
-  val endPoint: String = config.getString("database.endpoint")
+  val databaseEndPoint: String = config.getString("database.endpoint")
+  val databaseUrl: String = config.getString("database.url")
+  val sparkMaster: String = config.getString("spark.master")
+  val sparkAppName: String = config.getString("spark.appName")
+  val Entity: String = "entity"
+  val Spill: String = "spill"
+  val Prop: String = "prop"
+  val Val: String = "val"
+  val DPH: String = "dph"
+  val DirectPredicate: String = "direct_predicate"
+  val sparkConf: SparkConf = new SparkConf()
+    .setAppName(sparkAppName)
+    .setMaster(sparkMaster)
+  val sparkSession: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
 }
