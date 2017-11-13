@@ -8,9 +8,9 @@ organization := "com.knoldus"
 
 //Source
 val cassandraConnector = "com.datastax.spark" %% "spark-cassandra-connector" % "2.0.5"
-val sparkSql = "org.apache.spark" % "spark-sql_2.11" % "2.2.0" % "provided"
+val sparkSql = "org.apache.spark" % "spark-sql_2.11" % "2.2.0"
 val cassandra = "org.apache.cassandra" % "cassandra-all" % "3.11.1"
-val cassandraDriver =  "com.datastax.cassandra" % "cassandra-driver-core" % "3.3.1"
+val cassandraDriver =  "com.datastax.cassandra" % "cassandra-driver-core" % "3.3.1" exclude("org.slf4j", "slf4j-log4j12")
 val typeSafeConfig = "com.typesafe" % "config" % "1.3.2"
 
 val sourceDependencies =  Seq(cassandraConnector, sparkSql, cassandraDriver, cassandra, typeSafeConfig)
@@ -27,5 +27,6 @@ val netty = "io.netty" % "netty-all" % "4.0.44.Final"
 
 val overridesDependencies= Seq(netty, thrift, guava)
 
+excludeDependencies ++=(Seq("org.slf4j" % "slf4j-log4j12" % "1.7.16"))
 libraryDependencies ++= (sourceDependencies ++ testDependencies)
 dependencyOverrides ++= overridesDependencies

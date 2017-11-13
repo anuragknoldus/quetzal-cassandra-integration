@@ -26,5 +26,5 @@ package object knoldus {
   val sparkConf: SparkConf = new SparkConf()
     .setAppName(sparkAppName)
     .setMaster(sparkMaster)
-  val sparkSession: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
+  lazy val sparkSession: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
 }
