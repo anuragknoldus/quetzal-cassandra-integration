@@ -25,6 +25,7 @@ package object knoldus {
   val Predicate: String = "predicate"
   val Location: String = "location"
   val DirectPredicate: String = "direct_predicate"
+  val AllowFiltering = "ALLOW FILTERING"
   val sparkConf: SparkConf = new SparkConf()
     .setAppName(sparkAppName)
     .setMaster(sparkMaster)

@@ -12,8 +12,8 @@ import org.mockito.Mockito._
 class PredicateHashingSpec extends FlatSpec with MockitoSugar {
 
   val predicateInfo = PredicateInfo("Test", "0")
-  val cluster: Cluster = mock[Cluster]
   val mockedHashing: Hashing = mock[Hashing]
+  val cluster: CassandraCluster = mock[CassandraCluster]
   val mockedCluster: core.Cluster = mock[core.Cluster]
   val mockedSession: Session = mock[Session]
   val mockedResultSet: ResultSet = mock[ResultSet]

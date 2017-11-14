@@ -3,12 +3,12 @@ package service
 
 import com.datastax.driver.core.Session
 import com.google.inject.Inject
-import com.knoldus.model.{Cluster, PredicateInfo}
+import com.knoldus.model.{CassandraCluster, PredicateInfo}
 
 @Inject
-class PredicateHashing(cluster: Cluster, hashing: Hashing) {
+class PredicateHashing(cassandraCluster: CassandraCluster, hashing: Hashing) {
 
-  def session: Session = cluster.createCluster().connect(databaseName)
+  def session: Session = cassandraCluster.createCluster().connect(databaseName)
 
   def storePredicate(predicateInfo: PredicateInfo): Boolean = {
 
