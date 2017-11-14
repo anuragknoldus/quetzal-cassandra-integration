@@ -6,7 +6,7 @@ import com.google.inject.Inject
 import com.knoldus.model.{Cluster, PredicateInfo}
 
 @Inject
-class PredicateHashing(cluster: Cluster) {
+class PredicateHashing(cluster: Cluster, hashing: Hashing) {
 
   def session: Session = cluster.createCluster().connect(databaseName)
 
@@ -31,8 +31,19 @@ class PredicateHashing(cluster: Cluster) {
     val row = session.execute(selectPredicateQuery).one()
     session.close()
     Option(row) match {
-      case Some(firstRow) => Some(Prop + firstRow.getString(Location))
+      case Some(firstRow) => Some(firstRow.getString(Location))
       case None => None
     }
   }
+
+  def getHashValue(predicate: String): (Int, Int) = {
+    val hashOne = hashing.applyHashingOne(predicate)
+    val hashTwo = hashing.applyHashingTwo(predicate)
+    if (hashOne < hashTwo) {
+      (hashOne, hashTwo)
+    } else {
+      (hashTwo, hashOne)
+    }
+  }
+
 }

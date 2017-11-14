@@ -3,7 +3,7 @@ package model
 
 import com.datastax.driver.core
 import com.datastax.driver.core.{ResultSet, Row, Session}
-import com.knoldus.service.PredicateHashing
+import com.knoldus.service.{Hashing, PredicateHashing}
 import org.scalatest.FlatSpec
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
@@ -13,11 +13,12 @@ class PredicateHashingSpec extends FlatSpec with MockitoSugar {
 
   val predicateInfo = PredicateInfo("Test", "0")
   val cluster: Cluster = mock[Cluster]
+  val mockedHashing: Hashing = mock[Hashing]
   val mockedCluster: core.Cluster = mock[core.Cluster]
   val mockedSession: Session = mock[Session]
   val mockedResultSet: ResultSet = mock[ResultSet]
   val mockedRow: Row = mock[Row]
-  val predicateHashing = new PredicateHashing(cluster)
+  val predicateHashing = new PredicateHashing(cluster, mockedHashing)
 
   when(cluster.createCluster()).thenReturn(mockedCluster)
   when(mockedCluster.connect(databaseName)).thenReturn(mockedSession)
