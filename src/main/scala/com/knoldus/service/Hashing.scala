@@ -1,15 +1,16 @@
-package com.knoldus.service
+package com.knoldus
+package service
 
 class Hashing {
 
   def applyMod: (Int, Int) => Int = (base, value) => value % base + 1
 
-  lazy val mod5 = applyMod(5, _: Int)
+  lazy val baseMod = applyMod(dphTableSize, _: Int)
 
   def applyHashingOne(predicate: String): Int =
-    mod5(predicate.toLowerCase.toCharArray.sum.toInt)
+    baseMod(predicate.toLowerCase.toCharArray.sum.toInt)
 
   def applyHashingTwo(predicate: String): Int =
-    mod5(predicate.toUpperCase.toCharArray.sum.toInt)
+    baseMod(predicate.toUpperCase.toCharArray.sum.toInt)
 
 }

@@ -1,8 +1,6 @@
 package com.knoldus
 package model
 
-import java.util.UUID
-
 import com.datastax.driver.core._
 
 class CassandraCluster {
@@ -37,20 +35,6 @@ class CassandraCluster {
       session.close()
     }
   }
-
-  def createPredicateTable(): ExecutionInfo = {
-    val session = createCluster().connect()
-    try {
-      val query = s"""CREATE TABLE IF NOT EXISTS $databaseName.$DirectPredicate($Predicate text PRIMARY KEY, $Location text)"""
-      val rs = session.execute(query)
-      rs.getExecutionInfo
-    } catch {
-      case exception: Exception => throw exception
-    } finally {
-      session.close()
-    }
-  }
-
 
   def fetchFields(size: Int): String = {
     @scala.annotation.tailrec
