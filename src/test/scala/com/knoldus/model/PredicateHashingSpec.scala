@@ -4,9 +4,9 @@ package model
 import com.datastax.driver.core
 import com.datastax.driver.core.{ResultSet, Row, Session}
 import com.knoldus.service.{Hashing, PredicateHashing}
+import org.mockito.Mockito._
 import org.scalatest.FlatSpec
 import org.scalatest.mockito.MockitoSugar
-import org.mockito.Mockito._
 
 
 class PredicateHashingSpec extends FlatSpec with MockitoSugar {
@@ -40,7 +40,7 @@ class PredicateHashingSpec extends FlatSpec with MockitoSugar {
     when(mockedResultSet.one()).thenReturn(mockedRow)
     when(mockedRow.getString(Location)).thenReturn("0")
     val response = predicateHashing.getPredicateDetails(predicateInfo.predicate)
-    val expectedOutput = Prop + "0"
+    val expectedOutput = "0"
     assert(response.isDefined)
     assert(response.getOrElse("") == expectedOutput)
   }
