@@ -30,4 +30,11 @@ package object knoldus {
     .setAppName(sparkAppName)
     .setMaster(sparkMaster)
   lazy val sparkSession: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
+  val EmptyString = ""
+
+  object ConstantValues extends Enumeration {
+    type Numbers = Value
+    val Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten = Value
+  }
+
 }

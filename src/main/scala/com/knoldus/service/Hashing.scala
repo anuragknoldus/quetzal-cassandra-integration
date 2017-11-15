@@ -3,7 +3,7 @@ package service
 
 class Hashing {
 
-  def applyMod: (Int, Int) => Int = (base, value) => value % base + 1
+  def applyMod: (Int, Int) => Int = (base, value) => value % base + ConstantValues.One.id
 
   lazy val baseMod = applyMod(dphTableSize, _: Int)
 
@@ -12,5 +12,4 @@ class Hashing {
 
   def applyHashingTwo(predicate: String): Int =
     baseMod(predicate.toUpperCase.toCharArray.sum.toInt)
-
 }

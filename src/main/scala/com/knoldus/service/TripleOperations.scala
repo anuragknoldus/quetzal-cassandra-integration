@@ -1,6 +1,7 @@
 package com.knoldus.service
 
 import com.google.inject.Inject
+import com.knoldus.helper.QueryHelper
 import com.knoldus.model.{CassandraCluster, PredicateInfo, Triple}
 import com.knoldus.{DPH, sparkSession}
 import org.apache.spark.sql.{Encoder, Encoders}
@@ -50,12 +51,28 @@ class TripleOperations()(
     val location = predicateHashing.getPredicateDetails(predicate)
     location match {
       case Some(predicateLocation) => sparkSession.sql(
-          s"""Select entity AS entry, prop$predicateLocation AS predicate,
-             | val$predicateLocation AS value from $DPH where entity = '$subject'
-             |and prop$predicateLocation = '$predicate' limit 1""".stripMargin).as[Triple]
-          .collect().headOption
+        s"""Select entity AS entry, prop$predicateLocation
+ AS predicate,
+           | val$predicateLocation AS value from $DPH where entity = '$subject
+'
+           |and prop$predicateLocation = '$predicate' limit 1""".
+          stripMargin).as[Triple]
+        .collect().headOption
       case None => None
     }
   }
+}
 
+object TripleOperations {
+  def main(args: Array[String]): Unit = {
+    val queryHelper = new QueryHelper
+    val cassandraCluster = new CassandraCluster(queryHelper)
+    val hashing = new Hashing
+    val predicateHashing = new PredicateHashing()(cassandraCluster, hashing)
+    val directPredicateHashing = new DirectPredicateHashing(cassandraCluster, queryHelper)
+    cassandraCluster.createPredicateSchema()
+    cassandraCluster.createDPHTable()
+    val tripleOperations = new TripleOperations()(cassandraCluster, predicateHashing, directPredicateHashing)
+    tripleOperations.storeTriple(Triple("Entity2", "Predicate2", "Shubharambh+++"))
+  }
 }

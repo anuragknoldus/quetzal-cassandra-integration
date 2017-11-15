@@ -2,9 +2,17 @@ package com.knoldus
 package model
 
 import com.datastax.driver.core._
+import com.google.inject.Inject
+import com.knoldus.helper.QueryHelper
 
-class CassandraCluster {
+@Inject
+class CassandraCluster(queryHelper: QueryHelper) {
 
+  /**
+    * This method is used for creating the Cluster for Cassandra
+    *
+    * @return
+    */
   def createCluster(): Cluster = {
     try {
       Cluster.builder().addContactPoint(databaseEndPoint).build()
@@ -13,21 +21,16 @@ class CassandraCluster {
     }
   }
 
-  val session: Session = createCluster().connect(databaseName)
-
-  def createPredicateSchema(): Unit = {
-    val session = createCluster().connect()
-    val query = s"""CREATE TABLE IF NOT EXISTS $databaseName.$DirectPredicate($Predicate text PRIMARY KEY, $Location text)"""
-    session.execute(query)
-  }
-
+  /**
+    * Method is used for creating a database
+    *
+    * @return
+    */
   def createDatabase(): ExecutionInfo = {
 
     val session = createCluster().connect()
     try {
-      val createDatabase =
-        s"""CREATE KEYSPACE IF NOT EXISTS $databaseName WITH REPLICATION = { 'class' : 'SimpleStrategy'
-           |, 'replication_factor' : 3 };""".stripMargin
+      val createDatabase = queryHelper.CreateDatabase
       session.execute(createDatabase).getExecutionInfo
     } catch {
       case exception: Exception => throw exception
@@ -36,24 +39,50 @@ class CassandraCluster {
     }
   }
 
-  def fetchFields(size: Int): String = {
+  val session: Session = createCluster().connect(databaseName)
+
+  /**
+    * Method is used for creating Predicate Table
+    *
+    */
+  def createPredicateSchema(): Unit = {
+    val query = queryHelper.PredicateTableCreation
+    session.execute(query)
+  }
+
+  /**
+    * Method is used for creating the query string for DPH table
+    *
+    * @param dphTableSize
+    * @return
+    */
+  private def fetchFields(dphTableSize: Int): String = {
+
     @scala.annotation.tailrec
-    def fetchFieldsImpl(size: Int, defaultValue: Int = 1, fields: String = ""): String = {
-      size match {
-        case size if size > 1 => fetchFieldsImpl(size - 1, defaultValue + 1, fields ++ Prop + defaultValue + " " + "Text, " + Val + defaultValue + " " + "Text, ")
-        case size if size == 1 => fetchFieldsImpl(size - 1, defaultValue + 1, fields ++ Prop + defaultValue + " " + "Text, " + Val + defaultValue + " " + "Text")
+    def fetchFieldsImpl(dphTableSize: Int, defaultValue: Int = ConstantValues.One.id, fields: String = EmptyString): String = {
+      dphTableSize match {
+        case tableSize if tableSize > ConstantValues.One.id =>
+          fetchFieldsImpl(tableSize - ConstantValues.One.id, defaultValue + ConstantValues.One.id,
+            fields ++ Prop + defaultValue + " " + "Text, " + Val + defaultValue + " " + "Text, ")
+        case tableSize if tableSize == ConstantValues.One.id =>
+          fetchFieldsImpl(tableSize - ConstantValues.One.id, defaultValue + ConstantValues.One.id,
+            fields ++ Prop + defaultValue + " " + "Text, " + Val + defaultValue + " " + "Text")
         case _ => fields
       }
     }
 
-    fetchFieldsImpl(size)
+    fetchFieldsImpl(dphTableSize)
   }
 
+  /**
+    * Method is used for creating DPH Table
+    *
+    * @return
+    */
   def createDPHTable(): ExecutionInfo = {
-    val session = createCluster().connect()
     try {
       val queryString = fetchFields(dphTableSize)
-      val query = s"""CREATE TABLE IF NOT EXISTS $databaseName.$DPH($Id UUID, $Entity text, $Spill int, $Domain text, $queryString, PRIMARY KEY(id, domain))"""
+      val query = queryHelper.dphTableCreation(queryString)
       val rs = session.execute(query)
       rs.getExecutionInfo
     } catch {

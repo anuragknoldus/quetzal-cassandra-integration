@@ -13,8 +13,7 @@ class PredicateHashing()(cassandraCluster: CassandraCluster, hashing: Hashing) {
   def storePredicate(predicateInfo: PredicateInfo): Boolean = {
 
     val storePredicateQuery =
-      s"""INSERT INTO $DirectPredicate($Predicate, $Location)
-         VALUES('${predicateInfo.predicate}', '${predicateInfo.location}')"""
+      s"""INSERT INTO $DirectPredicate($Predicate, $Location) VALUES('${predicateInfo.predicate}', '${predicateInfo.location}')"""
     try {
       Option(session.execute(storePredicateQuery)).isDefined
     } catch {
