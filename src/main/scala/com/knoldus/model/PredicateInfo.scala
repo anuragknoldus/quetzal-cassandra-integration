@@ -1,4 +1,7 @@
 package com.knoldus
 package model
 
-case class PredicateInfo(predicate: String, location: String)
+case class PredicateInfo(
+                          predicate: String,
+                          location: String
+                        )

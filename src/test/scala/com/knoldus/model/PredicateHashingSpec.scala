@@ -18,7 +18,7 @@ class PredicateHashingSpec extends FlatSpec with MockitoSugar {
   val mockedSession: Session = mock[Session]
   val mockedResultSet: ResultSet = mock[ResultSet]
   val mockedRow: Row = mock[Row]
-  val predicateHashing = new PredicateHashing(cluster, mockedHashing)
+  val predicateHashing = new PredicateHashing()(cluster, mockedHashing)
 
   when(cluster.createCluster()).thenReturn(mockedCluster)
   when(mockedCluster.connect(databaseName)).thenReturn(mockedSession)

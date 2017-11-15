@@ -3,9 +3,9 @@ package service
 
 import java.util.UUID
 import javax.inject.Inject
-
 import com.datastax.driver.core.{ResultSet, Row, Session}
 import com.knoldus.model.{CassandraCluster, EntityInfo, Triple}
+import org.apache.spark.sql.{Encoder, Encoders, SparkSession}
 
 @Inject
 class DirectPredicateHashing(cassandraCluster: CassandraCluster) {
@@ -163,5 +163,10 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster) {
     } else {
       list
     }
+  }
+
+  def registerDPHTable(spark: SparkSession): Unit = {
+    spark.read.format("org.apache.spark.sql.cassandra").option("keyspace", databaseName)
+      .option("table", DPH).load().createOrReplaceTempView(DPH)
   }
 }

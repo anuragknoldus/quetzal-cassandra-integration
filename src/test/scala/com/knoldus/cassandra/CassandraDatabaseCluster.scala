@@ -1,7 +1,7 @@
 package com.knoldus
 package cassandra
 
-import com.knoldus.model.Cluster
+import com.knoldus.model.CassandraCluster
 import com.outworkers.phantom.dsl._
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
@@ -14,7 +14,7 @@ trait CassandraDatabaseCluster extends FlatSpec
   with OptionValues
   with CassandraDatabaseProvider {
 
-  val cluster = new Cluster
+  val cluster = new CassandraCluster
 
   override def beforeAll(): Unit = {
     EmbeddedCassandraServerHelper.startEmbeddedCassandra("test-cassandra.yaml", 1000000L)
