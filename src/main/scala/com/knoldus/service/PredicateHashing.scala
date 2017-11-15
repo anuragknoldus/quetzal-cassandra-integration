@@ -6,7 +6,7 @@ import com.google.inject.Inject
 import com.knoldus.model.{CassandraCluster, PredicateInfo}
 
 @Inject
-class PredicateHashing(cassandraCluster: CassandraCluster, hashing: Hashing) {
+class PredicateHashing()(cassandraCluster: CassandraCluster, hashing: Hashing) {
 
   def session: Session = cassandraCluster.createCluster().connect(databaseName)
 
