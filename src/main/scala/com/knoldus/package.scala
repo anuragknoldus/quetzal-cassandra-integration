@@ -31,6 +31,8 @@ package object knoldus {
     .setMaster(sparkMaster)
   lazy val sparkSession: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
   val EmptyString = ""
+  val ExceptionForPredicateTable = "Unable to Store triple in predicate_mapping Table"
+  val DomainName = "DPH_DATA"
 
   object ConstantValues extends Enumeration {
     type Numbers = Value

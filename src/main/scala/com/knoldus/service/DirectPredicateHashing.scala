@@ -24,7 +24,9 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     * @param triple         Triple values
     * @return Entity Info
     */
-  def getEntityInfo(minColumnValue: Int, maxColumnValue: Int, triple: Triple): EntityInfo = {
+  def getEntityInfo(minColumnValue: Int,
+                    maxColumnValue: Int,
+                    triple: Triple): EntityInfo = {
 
     val selectSQL = queryHelper.fetchValue(minColumnValue, maxColumnValue, triple.entry)
     val row = session.execute(selectSQL).one()
@@ -42,7 +44,10 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     * @param result         Row
     * @return Entity Info
     */
-  private def getEntityInfoFromRow(minColumnValue: Int, maxColumnValue: Int, result: Row, fieldRecords: Option[Map[UUID, Boolean]]): EntityInfo = {
+  private def getEntityInfoFromRow(minColumnValue: Int,
+                                   maxColumnValue: Int,
+                                   result: Row,
+                                   fieldRecords: Option[Map[UUID, Boolean]]): EntityInfo = {
 
     if (fieldRecords.isDefined) {
       val id = (fieldRecords.get filter { (fieldRecord) => fieldRecord._2 }).keys.toList.headOption
@@ -62,10 +67,12 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     *
     * @param minColumnValue Min Column Value
     * @param maxColumnValue Max Column Value
-    * @param result row of the result
+    * @param result         row of the result
     * @return
     */
-  private def getEntityInfoHelper(minColumnValue: Int, maxColumnValue: Int, result: Row): EntityInfo = {
+  private def getEntityInfoHelper(minColumnValue: Int,
+                                  maxColumnValue: Int,
+                                  result: Row): EntityInfo = {
 
     val spill = result.getInt(Spill)
     val firstProp = Option(result.getString(Prop + minColumnValue)).getOrElse(EmptyString)
@@ -86,7 +93,9 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     * @param entityInfo Entity Info
     * @return
     */
-  def storeTripleToDPH(tripleInfo: Triple, domain: String, entityInfo: EntityInfo): Boolean = {
+  def storeTripleToDPH(tripleInfo: Triple,
+                       domain: String,
+                       entityInfo: EntityInfo): Boolean = {
 
     val id = UUID.randomUUID
     val query = queryHelper.insertValue(entityInfo, tripleInfo, id, domain)
@@ -100,11 +109,12 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
   /**
     * Method is used for getting the Info regarding the Entity
     *
-    * @param value Column Value
+    * @param value  Column Value
     * @param triple Triple Value
     * @return Entity Info
     */
-  def getUpdateInfo(value: String, triple: Triple): EntityInfo = {
+  def getUpdateInfo(value: String,
+                    triple: Triple): EntityInfo = {
 
     val selectSQL = queryHelper.fetchIDWithSpillAndProp(value, triple.entry)
     val fieldRecords = getIdForUpdate(session.execute(selectSQL), value: String, Map())
@@ -118,11 +128,12 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
   /**
     * Method is used for update the Triple into DPH Table
     *
-    * @param triple Triple Value
+    * @param triple     Triple Value
     * @param entityInfo Entity Information
     * @return
     */
-  def updateTripleToDPH(triple: Triple, entityInfo: EntityInfo): Boolean = {
+  def updateTripleToDPH(triple: Triple,
+                        entityInfo: EntityInfo): Boolean = {
 
     val selectSQL = queryHelper.fetchIDWithDomain(triple.entry)
     val resultSet = session.execute(selectSQL)
@@ -145,11 +156,12 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
   /**
     * Update DPH Table for the Particular ID
     *
-    * @param triple Triple Value
+    * @param triple     Triple Value
     * @param entityInfo Entity Information
     * @return
     */
-  def updateViaId(triple: Triple, entityInfo: EntityInfo): Boolean = {
+  def updateViaId(triple: Triple,
+                  entityInfo: EntityInfo): Boolean = {
 
     val selectSQL = queryHelper.fetchDomain(triple.entry)
     val row = session.execute(selectSQL).one()
@@ -161,11 +173,13 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     * Update Spill Value in Dph Table
     *
     * @param listOfUUID Default or Empty List for first time
-    * @param spill Spill Value
-    * @param domain Domain Value
+    * @param spill      Spill Value
+    * @param domain     Domain Value
     * @return
     */
-  def updateSpillInDB(listOfUUID: List[UUID], spill: Int, domain: String): List[Boolean] = {
+  def updateSpillInDB(listOfUUID: List[UUID],
+                      spill: Int,
+                      domain: String): List[Boolean] = {
 
     listOfUUID map { id =>
       val updateQuery = queryHelper.updateMultipleRow(spill, domain, id)
@@ -177,13 +191,15 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
   /**
     * Method is used for Fetching the ID which we can update when multiple rows find for single subject
     *
-    * @param resultSet Result from the Database
-    * @param value Column value
+    * @param resultSet           Result from the Database
+    * @param value               Column value
     * @param mapOfUUIDAndBoolean Default or Empty Map for first time
     * @return
     */
   @tailrec
-  private def getIdForUpdate(resultSet: ResultSet, value: String, mapOfUUIDAndBoolean: Map[UUID, Boolean]): Map[UUID, Boolean] = {
+  private def getIdForUpdate(resultSet: ResultSet,
+                             value: String,
+                             mapOfUUIDAndBoolean: Map[UUID, Boolean]): Map[UUID, Boolean] = {
 
     if (!resultSet.isExhausted) {
       val row = resultSet.one()
@@ -204,11 +220,12 @@ class DirectPredicateHashing(cassandraCluster: CassandraCluster,
     * Get theList Of Id
     *
     * @param resultSet Result from the Database
-    * @param idList Default or Empty List for first time
+    * @param idList    Default or Empty List for first time
     * @return
     */
   @tailrec
-  private def getIdFromResultSet(resultSet: ResultSet, idList: List[UUID]): List[UUID] = {
+  private def getIdFromResultSet(resultSet: ResultSet,
+                                 idList: List[UUID]): List[UUID] = {
     if (!resultSet.isExhausted) {
       val id = resultSet.one().getUUID(Id)
       getIdFromResultSet(resultSet, id :: idList)

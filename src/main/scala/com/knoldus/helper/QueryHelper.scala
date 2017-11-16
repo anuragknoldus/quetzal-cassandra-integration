@@ -31,5 +31,8 @@ class QueryHelper {
        | where domain = '${row.getString("domain")}' and id = $id""".stripMargin
   val updateMultipleRow: ((Int, String, UUID) => String) = (spill, domain, id) =>
     s"""update $databaseName.$DPH set spill = $spill where domain = '$domain' and id = $id""".stripMargin
+  val insertValueInPredicate: ((String, String) => String) = (predicate, location) =>
+    s"""INSERT INTO $DirectPredicate($Predicate, $Location) VALUES('$predicate', '$location')"""
+  val fetchDataFromPredicate: (String => String) = predicate => s"""SELECT * FROM $DirectPredicate WHERE $Predicate = '$predicate'"""
 
 }

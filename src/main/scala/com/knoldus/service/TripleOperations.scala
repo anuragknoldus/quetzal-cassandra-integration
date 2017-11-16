@@ -1,4 +1,5 @@
-package com.knoldus.service
+package com.knoldus
+package service
 
 import com.google.inject.Inject
 import com.knoldus.helper.QueryHelper
@@ -12,22 +13,35 @@ class TripleOperations()(
   predicateHashing: PredicateHashing,
   directPredicateHashing: DirectPredicateHashing) {
 
+  /**
+    * Method used for storing the Triples into DPH Table on the basis of curtain condition
+    * which we check into this method
+    *
+    * @param triple Triple Value
+    * @return
+    */
   def storeTriple(triple: Triple): Boolean = {
 
     predicateHashing.getPredicateDetails(triple.predicate) match {
       case Some(columnLocation) =>
         val entityInfo = directPredicateHashing.getUpdateInfo(columnLocation, triple)
-        if (entityInfo.isAvailable && entityInfo.id.isEmpty) {
-          directPredicateHashing.updateTripleToDPH(triple, entityInfo)
-        } else if (entityInfo.isAvailable && entityInfo.id.isDefined) {
-          directPredicateHashing.updateViaId(triple, entityInfo)
-        } else {
-          directPredicateHashing.storeTripleToDPH(triple, "Chemistry", entityInfo)
+        entityInfo match {
+          case entityInformation if entityInformation.isAvailable && entityInformation.id.isEmpty =>
+            directPredicateHashing.updateTripleToDPH(triple, entityInfo)
+          case entityInformation if entityInformation.isAvailable && entityInformation.id.isDefined =>
+            directPredicateHashing.updateViaId(triple, entityInfo)
+          case _ => directPredicateHashing.storeTripleToDPH(triple, DomainName, entityInfo)
         }
       case None => storeFreshTriple(triple)
     }
   }
 
+  /**
+    * Method is used for Storing the Triples first time
+    *
+    * @param triple Triple Value
+    * @return
+    */
   def storeFreshTriple(triple: Triple): Boolean = {
 
     val (minColumnValue, maxColumnValue) = predicateHashing.getHashValue(triple.predicate)
@@ -38,10 +52,10 @@ class TripleOperations()(
         val result = directPredicateHashing.updateTripleToDPH(triple, entityInfo)
         result
       } else {
-        directPredicateHashing.storeTripleToDPH(triple, "Chemistry", entityInfo)
+        directPredicateHashing.storeTripleToDPH(triple, DomainName, entityInfo)
       }
     } else {
-      throw new Exception("Unable to Store triple in predicate_mapping Table")
+      throw new Exception(ExceptionForPredicateTable)
     }
   }
 
@@ -68,7 +82,7 @@ object TripleOperations {
     val queryHelper = new QueryHelper
     val cassandraCluster = new CassandraCluster(queryHelper)
     val hashing = new Hashing
-    val predicateHashing = new PredicateHashing()(cassandraCluster, hashing)
+    val predicateHashing = new PredicateHashing(cassandraCluster, hashing, queryHelper)
     val directPredicateHashing = new DirectPredicateHashing(cassandraCluster, queryHelper)
     cassandraCluster.createPredicateSchema()
     cassandraCluster.createDPHTable()

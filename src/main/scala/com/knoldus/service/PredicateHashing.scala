@@ -3,39 +3,67 @@ package service
 
 import com.datastax.driver.core.Session
 import com.google.inject.Inject
+import com.knoldus.helper.QueryHelper
 import com.knoldus.model.{CassandraCluster, PredicateInfo}
 
 @Inject
-class PredicateHashing()(cassandraCluster: CassandraCluster, hashing: Hashing) {
+class PredicateHashing(cassandraCluster: CassandraCluster,
+                       hashing: Hashing,
+                       queryHelper: QueryHelper) {
 
-  def session: Session = cassandraCluster.createCluster().connect(databaseName)
+  lazy val session: Session = cassandraCluster.createCluster().connect(databaseName)
 
+  /**
+    * Store the Predicate into Predicate Mapping Table
+    *
+    * @param predicateInfo
+    * @return
+    */
   def storePredicate(predicateInfo: PredicateInfo): Boolean = {
 
-    val storePredicateQuery =
-      s"""INSERT INTO $DirectPredicate($Predicate, $Location) VALUES('${predicateInfo.predicate}', '${predicateInfo.location}')"""
+    val storePredicateQuery = queryHelper.insertValueInPredicate(predicateInfo.predicate, predicateInfo.location)
     try {
       Option(session.execute(storePredicateQuery)).isDefined
     } catch {
-      case _: Exception => false
+      case exception: Exception => throw exception
     }
     finally {
       session.close()
     }
   }
 
+  /**
+    * Fetch the Predicate from Predicate Mapping Table
+    *
+    * @param predicate
+    * @return
+    */
   def getPredicateDetails(predicate: String): Option[String] = {
 
-    val selectPredicateQuery = s"""SELECT * FROM $DirectPredicate WHERE $Predicate = '$predicate'"""
-    val row = session.execute(selectPredicateQuery).one()
-    session.close()
-    Option(row) match {
-      case Some(firstRow) => Some(firstRow.getString(Location))
-      case None => None
+    val selectPredicateQuery = queryHelper.fetchDataFromPredicate(predicate)
+    try {
+      val row = session.execute(selectPredicateQuery).one()
+      session.close()
+      Option(row) match {
+        case Some(firstRow) => Some(firstRow.getString(Location))
+        case None => None
+      }
+    } catch {
+      case exception: Exception => throw exception
+    } finally {
+      session.close()
     }
   }
 
+  /**
+    * Method is used for getting the location info of the predicate
+    *
+    * @param predicate Predicate Value
+    * @return (location1, location2)
+    */
+
   def getHashValue(predicate: String): (Int, Int) = {
+
     val hashOne = hashing.applyHashingOne(predicate)
     val hashTwo = hashing.applyHashingTwo(predicate)
     if (hashOne < hashTwo) {
@@ -44,5 +72,4 @@ class PredicateHashing()(cassandraCluster: CassandraCluster, hashing: Hashing) {
       (hashTwo, hashOne)
     }
   }
-
 }
