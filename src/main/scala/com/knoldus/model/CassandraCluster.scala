@@ -34,8 +34,6 @@ class CassandraCluster(queryHelper: QueryHelper) {
       session.execute(createDatabase).getExecutionInfo
     } catch {
       case exception: Exception => throw exception
-    } finally {
-      session.close()
     }
   }
 
@@ -87,8 +85,6 @@ class CassandraCluster(queryHelper: QueryHelper) {
       rs.getExecutionInfo
     } catch {
       case exception: Exception => throw exception
-    } finally {
-      session.close()
     }
   }
 }

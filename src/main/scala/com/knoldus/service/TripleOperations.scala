@@ -63,13 +63,12 @@ class TripleOperations()(
     implicit val tripleEncoder: Encoder[Triple] = Encoders.product[Triple]
     directPredicateHashing.registerDPHTable(sparkSession)
     val location = predicateHashing.getPredicateDetails(predicate)
+    sparkSession.sql(s"Select * from $DPH").show()
     location match {
       case Some(predicateLocation) => sparkSession.sql(
-        s"""Select entity AS entry, prop$predicateLocation
- AS predicate,
-           | val$predicateLocation AS value from $DPH where entity = '$subject
-'
-           |and prop$predicateLocation = '$predicate' limit 1""".
+        s"""Select entity AS entry, prop$predicateLocation AS predicate,
+           | val$predicateLocation AS value from $DPH where entity = '$subject'
+           | and prop$predicateLocation = '$predicate' limit 1""".
           stripMargin).as[Triple]
         .collect().headOption
       case None => None

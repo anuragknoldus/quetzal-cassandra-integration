@@ -7,9 +7,8 @@ import com.knoldus.service.{Hashing, PredicateHashing}
 class PredicateHashingSuite extends CassandraDatabaseCluster {
 
   val predicateInfo = PredicateInfo("predicate", "location")
-  override val cluster = new CassandraCluster
   val hashing = new Hashing
-  val predicateHashing = new PredicateHashing()(cluster, hashing)
+  val predicateHashing = new PredicateHashing(cluster, hashing, queryHelper)
 
   it should "get results" in {
     val isStored = predicateHashing.storePredicate(predicateInfo)
@@ -18,4 +17,9 @@ class PredicateHashingSuite extends CassandraDatabaseCluster {
     assert(isStored)
     assert(result == expectedOutput)
   }
+
+  /*it should "get Hash Values for Predicate" in {
+    val (minHashValue, maxHashValue) = predicateHashing.getHashValue(predicateInfo.predicate)
+    assert(true)
+  }*/
 }

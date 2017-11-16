@@ -27,9 +27,6 @@ class PredicateHashing(cassandraCluster: CassandraCluster,
     } catch {
       case exception: Exception => throw exception
     }
-    finally {
-      session.close()
-    }
   }
 
   /**
@@ -43,15 +40,12 @@ class PredicateHashing(cassandraCluster: CassandraCluster,
     val selectPredicateQuery = queryHelper.fetchDataFromPredicate(predicate)
     try {
       val row = session.execute(selectPredicateQuery).one()
-      session.close()
       Option(row) match {
         case Some(firstRow) => Some(firstRow.getString(Location))
         case None => None
       }
     } catch {
       case exception: Exception => throw exception
-    } finally {
-      session.close()
     }
   }
 
@@ -61,7 +55,6 @@ class PredicateHashing(cassandraCluster: CassandraCluster,
     * @param predicate Predicate Value
     * @return (location1, location2)
     */
-
   def getHashValue(predicate: String): (Int, Int) = {
 
     val hashOne = hashing.applyHashingOne(predicate)
