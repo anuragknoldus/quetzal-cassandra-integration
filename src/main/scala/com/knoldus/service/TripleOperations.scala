@@ -83,8 +83,6 @@ object TripleOperations {
     val hashing = new Hashing
     val predicateHashing = new PredicateHashing(cassandraCluster, hashing, queryHelper)
     val directPredicateHashing = new DirectPredicateHashing(cassandraCluster, queryHelper)
-    cassandraCluster.createPredicateSchema()
-    cassandraCluster.createDPHTable()
     val tripleOperations = new TripleOperations()(cassandraCluster, predicateHashing, directPredicateHashing)
     tripleOperations.storeTriple(Triple("Entity2", "Predicate2", "Shubharambh+++"))
   }

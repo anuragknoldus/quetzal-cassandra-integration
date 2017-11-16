@@ -13,8 +13,12 @@ val cassandra = "org.apache.cassandra" % "cassandra-all" % "3.11.1"
 val cassandraDriver =  "com.datastax.cassandra" % "cassandra-driver-core" % "3.3.1"
 val typeSafeConfig = "com.typesafe" % "config" % "1.3.2"
 val phantomDsl = "com.outworkers" % "phantom-dsl_2.11" % "2.14.5"
+val jena = "org.apache.jena" % "apache-jena-libs" % "3.5.0" pomOnly()
 
-val sourceDependencies =  Seq(cassandraConnector, sparkSql, cassandraDriver, cassandra, typeSafeConfig, phantomDsl).map(_.exclude("org.slf4j", "slf4j-log4j12"))
+
+val sourceDependencies =  Seq(cassandraConnector, sparkSql,
+  cassandraDriver, cassandra, typeSafeConfig,
+  phantomDsl, jena).map(_.exclude("org.slf4j", "slf4j-log4j12"))
 
 //Test
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % "test"
