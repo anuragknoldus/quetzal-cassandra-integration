@@ -3,7 +3,6 @@ package cassandra
 
 import com.knoldus.helper.QueryHelper
 import com.knoldus.model.CassandraCluster
-import com.outworkers.phantom.dsl._
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
@@ -12,20 +11,16 @@ trait CassandraDatabaseCluster extends FlatSpec
   with BeforeAndAfterAll
   with ScalaFutures
   with Matchers
-  with OptionValues
-  with CassandraDatabaseProvider {
+  with OptionValues {
 
-  val queryHelper = new QueryHelper
-  val cluster = new CassandraCluster(queryHelper)
+  lazy val queryHelper = new QueryHelper
+  var cluster: CassandraCluster = _
 
   override def beforeAll(): Unit = {
     EmbeddedCassandraServerHelper.startEmbeddedCassandra("test-cassandra.yaml", 1000000L)
-    database.create()
+    cluster = new CassandraCluster(queryHelper)
+    cluster.createDatabase()
     cluster.createPredicateSchema()
-  }
-
-  override def afterAll(): Unit = {
-    database.truncate()
   }
 
 }

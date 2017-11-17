@@ -37,7 +37,7 @@ class CassandraCluster(queryHelper: QueryHelper) {
     }
   }
 
-  val session: Session = createCluster().connect(databaseName)
+  lazy val session: Session = createCluster().connect(databaseName)
 
   /**
     * Method is used for creating Predicate Table
