@@ -9,9 +9,29 @@ import org.apache.jena.riot.RDFDataMgr
 
 import scala.collection.JavaConversions._
 
-object TripleLoader {
+class TripleLoader {
 
   implicit def nodeToString(node: Node): String = node.toString
+
+
+  def loadTripleFileToCassandra(path: String, tripleOperations: TripleOperations): Boolean = {
+     loadFileAsModel(path).map { jenaTriple =>
+      val customTriple = Triple(jenaTriple.getSubject, jenaTriple.getPredicate, jenaTriple.getObject)
+      tripleOperations.storeTriple(customTriple)
+    }.forall(identity)
+
+  }
+
+
+  def loadFileAsModel(path: String): List[graph.Triple] = {
+
+    val model = RDFDataMgr.loadModel(path)
+    val emptyNode = Node.ANY
+    model.getGraph.find(emptyNode, emptyNode, emptyNode).toList.toList
+  }
+}
+
+object TripleLoader {
 
   def main(args: Array[String]): Unit = {
 
@@ -21,18 +41,9 @@ object TripleLoader {
     val predicateHashing = new PredicateHashing(cassandraCluster, hashing, queryHelper)
     val directPredicateHashing = new DirectPredicateHashing(cassandraCluster, queryHelper)
     val tripleOperations = new TripleOperations()(cassandraCluster, predicateHashing, directPredicateHashing)
+    val tripleLoader =  new TripleLoader
     cassandraCluster.createDPHTable()
-    cassandraCluster.createPredicateSchema
-    loadFileAsModel().foreach { jenaTriple =>
-      val customTriple = Triple(jenaTriple.getSubject, jenaTriple.getPredicate, jenaTriple.getObject)
-      tripleOperations.storeTriple(customTriple)
-    }
-  }
-
-  def loadFileAsModel(path: String = ""): List[graph.Triple] = {
-
-    val model = RDFDataMgr.loadModel("/home/akash/Downloads/elssie.nt")
-    val emptyNode = Node.ANY
-    model.getGraph.find(emptyNode, emptyNode, emptyNode).toList.toList
+    cassandraCluster.createPredicateSchema()
+    tripleLoader.loadTripleFileToCassandra(args(0), tripleOperations)
   }
 }

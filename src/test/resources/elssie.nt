@@ -1,0 +1,5 @@
+<elsi:molecule_m3_CHEBI_33250_3_a1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <chebi:CHEBI_27594> .
+<elsi:molecule_m3_CHEBI_33250_3_a1> <http://data.elsevier.com/elsi.owl#is_atom_of> <elsi:molecule_m3> .
+<elsi:molecule_m3_CHEBI_33250_3_a1> <http://data.elsevier.com/elsi.owl#has_valence> "4" .
+<elsi:molecule_m3_CHEBI_33250_3_a1> <http://data.elsevier.com/elsi.owl#has_fragment> "1" .
+<elsi:molecule_m3_CHEBI_33250_3_a1> <http://data.elsevier.com/elsi.owl#has_ringbonds> "0" .

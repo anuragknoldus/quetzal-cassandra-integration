@@ -1,5 +1,5 @@
 package com.knoldus
-package cassandra
+package integration
 
 import com.knoldus.helper.QueryHelper
 import com.knoldus.model.CassandraCluster
@@ -13,14 +13,14 @@ trait CassandraDatabaseCluster extends FlatSpec
   with Matchers
   with OptionValues {
 
-  lazy val queryHelper = new QueryHelper
-  var cluster: CassandraCluster = _
+  val queryHelper = new QueryHelper
 
   override def beforeAll(): Unit = {
     EmbeddedCassandraServerHelper.startEmbeddedCassandra("test-cassandra.yaml", 1000000L)
-    cluster = new CassandraCluster(queryHelper)
+    val cluster = new CassandraCluster(queryHelper)
     cluster.createDatabase()
     cluster.createPredicateSchema()
+    cluster.createDPHTable()
   }
 
 }

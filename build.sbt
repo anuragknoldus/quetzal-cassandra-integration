@@ -30,5 +30,9 @@ val netty = "io.netty" % "netty-all" % "4.0.44.Final"
 val overridesDependencies = Seq(netty, thrift, guava).map(_.exclude("org.slf4j", "slf4j-log4j12"))
 
 excludeDependencies ++= Seq("org.slf4j" % "slf4j-log4j12" % "1.7.16")
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3" % "test"
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala
+libraryDependencies += "com.fasterxml.jackson.module" % "jackson-module-scala_2.11" % "2.9.0" % "test"
 libraryDependencies ++= (sourceDependencies ++ testDependencies)
 dependencyOverrides ++= overridesDependencies
+parallelExecution in Test := false

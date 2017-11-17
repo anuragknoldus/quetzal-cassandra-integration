@@ -63,7 +63,6 @@ class TripleOperations()(
     implicit val tripleEncoder: Encoder[Triple] = Encoders.product[Triple]
     directPredicateHashing.registerDPHTable(sparkSession)
     val location = predicateHashing.getPredicateDetails(predicate)
-    sparkSession.sql(s"Select * from $DPH").show()
     location match {
       case Some(predicateLocation) => sparkSession.sql(
         s"""Select entity AS entry, prop$predicateLocation AS predicate,
@@ -76,14 +75,3 @@ class TripleOperations()(
   }
 }
 
-object TripleOperations {
-  def main(args: Array[String]): Unit = {
-    val queryHelper = new QueryHelper
-    val cassandraCluster = new CassandraCluster(queryHelper)
-    val hashing = new Hashing
-    val predicateHashing = new PredicateHashing(cassandraCluster, hashing, queryHelper)
-    val directPredicateHashing = new DirectPredicateHashing(cassandraCluster, queryHelper)
-    val tripleOperations = new TripleOperations()(cassandraCluster, predicateHashing, directPredicateHashing)
-    tripleOperations.storeTriple(Triple("Entity2", "Predicate2", "Shubharambh+++"))
-  }
-}
